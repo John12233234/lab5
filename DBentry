@@ -1,47 +1,45 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+#ifndef _DBENTRY_H
+#define _DBENTRY_H
 
-/* 
- * File:   TreeNode.h
- * Author: mariajanetambrad
- *
- * Created on November 24, 2018, 9:00 PM
- */
-#ifndef _TREENODE_H
-#define _TREENODE_H
+#include <string>
+using namespace std;
 
-#include "DBentry.h"
-
-class TreeNode {
+class DBentry {
 private:
-    DBentry* entryPtr;
-    TreeNode* left;
-    TreeNode* right;
+	string name;
+	unsigned int IPaddress;
+        bool active;
 
 public:
-    // A useful constructor
-    TreeNode(DBentry* _entryPtr);
+	// the default constructor
+	DBentry();
+        DBentry (string _name, unsigned int _IPaddress, bool _active);
 
-    // the destructor
-    ~TreeNode();
+	// the destructor
+ 	~DBentry();	
 
-    // sets the left child of the TreeNode.
-    void setLeft(TreeNode* newLeft);
+	// sets the domain name, which we will use as a key.
+	void setName(string _name);
 
-    // sets the right child of the TreeNode
-    void setRight(TreeNode* newRight);
+	// sets the IPaddress data.
+	void setIPaddress(unsigned int _IPaddress);
+    
+        // sets whether or not this entry is active.
+        void setActive (bool _active);
 
-    // gets the left child of the TreeNode.
-    TreeNode* getLeft() const;
+        // returns the name.
+	string getName() const;
 
-    // gets the right child of the TreeNode
-    TreeNode* getRight() const;
+	// returns the IPaddress data.
+	unsigned int getIPaddress() const;
 
-    // returns a pointer to the DBentry the TreeNode contains. 
-    DBentry* getEntry() const;
+        // returns whether or not this entry is active.
+        bool getActive() const;
+
+	// prints the entry in the format 
+        // name : IPaddress : active  followed by newline
+        // active is printed as a string (active or inactive)
+        friend ostream& operator<< (ostream& out, const DBentry& rhs);
 };
 
 #endif 
