@@ -174,52 +174,9 @@ using namespace std;
        }
        
        else if(ptrleft == NULL){
+          
            if(ptrright->getLeft() == NULL)//in this case the right child exist left is null
-               ptr0->setRight(ptrright->getRight());
-           else if(ptrright->getRight() == NULL )
-               ptr0->setRight(ptrright->getLeft()); //set any child of the right node to be the right child
-           ptrright->setRight(NULL);
-           ptrright->setLeft(NULL);
-           delete ptrright;
-           
-       }
-       //case where the deleted node is the left and only child
-       else if(ptrright == NULL){
-           if(ptrleft->getLeft() == NULL)
-               ptr0->setLeft(ptrleft->getRight());
-           else if(ptrleft->getRight() == NULL)
-               ptr0->setLeft(ptrleft->getLeft()); 
-           ptrleft->setRight(NULL);
-           ptrleft->setLeft(NULL);
-           delete ptrleft;
-       }
-       
-       
-       
-       //beginning case where both children are present
-       
-       //case where the node to be deleted is the left child
-       //in this case the replacement node is right most 
-       else if(ptrright == NULL){
-           if(ptrleft->getLeft() != NULL && ptrleft->getRight() != NULL){
-               travelPtr = ptrleft->getLeft();
-               while(travelPtr->getRight() != NULL)
-                   travelPtr = travelPtr->getRight(); //keep going right till null
-               ptr0->setLeft(travelPtr);
-               travelPtr->setLeft(ptrleft->getLeft());
-               travelPtr->setRight(ptrleft->getRight());
-               ptrleft->setLeft(NULL);
-               ptrleft->setRight(NULL);
-               delete ptrleft;
-               
-               
-               
-               
-               
-           }
-       }
-       else if(ptrleft == NULL){
-           if(ptrleft->getLeft() != NULL && ptrleft->getRight() != NULL){
+               if(ptrleft->getLeft() != NULL && ptrleft->getRight() != NULL){
                travelPtr = ptrright->getLeft();
                while(travelPtr->getRight() != NULL)
                    travelPtr = travelPtr->getRight(); //keep going right till null
@@ -235,8 +192,54 @@ using namespace std;
                
                
            }
+               
+               
+           else{
+            if(ptrright->getLeft() == NULL)  
+               ptr0->setRight(ptrright->getRight());
+            else if(ptrright->getRight() == NULL )
+               ptr0->setRight(ptrright->getLeft()); //set any child of the right node to be the right child
+           ptrright->setRight(NULL);
+           ptrright->setLeft(NULL);
+           delete ptrright;
+               }
+           
        }
-        
+       //case where the deleted node is the left and only child
+       else if(ptrright == NULL){
+             if(ptrleft->getLeft() != NULL && ptrleft->getRight() != NULL){
+               travelPtr = ptrleft->getLeft();
+               while(travelPtr->getRight() != NULL)
+                   travelPtr = travelPtr->getRight(); //keep going right till null
+               ptr0->setLeft(travelPtr);
+               travelPtr->setLeft(ptrleft->getLeft());
+               travelPtr->setRight(ptrleft->getRight());
+               ptrleft->setLeft(NULL);
+               ptrleft->setRight(NULL);
+               delete ptrleft;
+           }
+           
+           
+           
+            else{
+           if(ptrleft->getLeft() == NULL)
+               ptr0->setLeft(ptrleft->getRight());
+           else if(ptrleft->getRight() == NULL)
+               ptr0->setLeft(ptrleft->getLeft()); 
+           ptrleft->setRight(NULL);
+           ptrleft->setLeft(NULL);
+           delete ptrleft;
+             }
+       }
+       
+       
+       
+       //beginning case where both children are present
+       
+       //case where the node to be deleted is the left child
+       //in this case the replacement node is right most 
+     
+      
        
                
            
@@ -247,7 +250,7 @@ using namespace std;
         if(my_root != NULL){
             if(my_root->getLeft() == NULL && my_root->getRight() == NULL)
                 return my_root;
-        } //no handling cases where left and right are null. 
+        } //no handling cases where left or right are null. 
             if(my_root->getLeft()->getEntry()->getName() == name){
                 delNodeLeft = my_root->getLeft();
                 return my_root;
@@ -337,14 +340,25 @@ using namespace std;
        
        
    }
+   void TreeDB::updatestatus(string name,bool stats){
+     DBentry* ptr0 = find(name);
+     
+     ptr0->setActive(stats);
+     
+     
+ }
+ 
    void TreeDB::output(const TreeNode* myroot) const{
        if(myroot != NULL){
-           cout<<myroot->getEntry()->getName()<<" "<<myroot->getEntry()->getIPaddress()<<" ";
+           output(myroot->getLeft());
+         
+           
+           cout<<myroot->getEntry()->getName()<<" : "<<myroot->getEntry()->getIPaddress()<<" : ";
            if(myroot->getEntry()->getActive())
                cout<<"active"<<endl;
            else
                cout<<"inactive"<<endl;
-           output(myroot->getLeft());
+           //output(myroot->getLeft());
            output(myroot->getRight());
        }
    }
@@ -368,9 +382,10 @@ using namespace std;
      
      
  }
+
  
  ostream& operator<< (ostream& out, TreeNode* rhs){
-     cout<<rhs->getEntry()->getName()<<" "<<rhs->getEntry()->getIPaddress()<<" "<<rhs->getEntry()->getActive()<<endl;
+     cout<<rhs->getEntry()->getName()<<" : "<<rhs->getEntry()->getIPaddress()<<" : "<<rhs->getEntry()->getActive()<<endl;
  }
  
  
