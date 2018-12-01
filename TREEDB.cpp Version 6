@@ -1,0 +1,376 @@
+#include <iostream>
+#include <string>
+#include "TreeDB.h"
+#include "DBentry.h"
+#include "TreeNode.h"
+#include <string>
+
+using namespace std;
+
+    TreeDB::TreeDB(){
+        root = NULL;
+        
+    }
+    
+    void TreeDB::delete_tree(TreeNode* myroot){
+        if(myroot == NULL) return;
+        
+       delete_tree(myroot->getLeft());
+        
+       delete_tree(myroot->getRight());
+        
+       delete myroot;
+       myroot=NULL;
+        
+    }
+    
+    DBentry* TreeDB::findHelper(TreeNode* my_root, string name){        
+        if(my_root != NULL){
+            probesCount++;
+            if(my_root->getEntry()->getName() == name)
+                return my_root->getEntry();
+            else if(name > my_root->getEntry()->getName()){
+                
+                return findHelper(my_root->getRight(),name);
+            }
+            else if(name < my_root->getEntry()->getName()){
+                return findHelper(my_root->getLeft(),name);
+            }
+        }
+        else{
+            return NULL;
+        }
+    }
+  
+ 
+ bool TreeDB::insert_bst(TreeNode* p, DBentry* r) {
+    if (p->getEntry()->getName() == r->getName()) return false;
+   
+    if(p->getEntry()->getName() > r->getName()){
+        if(p->getLeft() == NULL){
+            p->setLeft(new TreeNode(r));
+            return true;
+        }
+        else return insert_bst(p->getLeft(),r);
+        
+    }
+    else if(p->getEntry()->getName() < r->getName()){
+        if(p->getRight() == NULL){
+            p->setRight(new TreeNode(r));
+            return true;
+        }
+        else return insert_bst(p->getRight(),r);
+    }
+    
+} 
+
+ 
+
+   // the destructor, deletes all the entries in the database.
+   TreeDB::~TreeDB(){
+       if(root == NULL)
+           return;
+       
+       
+       delete_tree(root);
+       
+       
+       
+       
+       
+       
+   }
+
+   // inserts the entry pointed to by newEntry into the database. 
+   // If an entry with the same key as newEntry's exists 
+   // in the database, it returns false. Otherwise, it returns true.
+   bool TreeDB::insert(DBentry* newEntry){
+      // bool there;
+       
+       if(root == NULL){
+           root = new TreeNode(newEntry);
+           return true;
+       }
+       else{
+           return insert_bst(root,newEntry);
+       }
+       
+ 
+ 
+} 
+       
+       
+       
+    
+
+   // searches the database for an entry with a key equal to name.
+   // If the entry is found, a pointer to it is returned.
+   // If the entry is not found, the NULL pointer is returned.
+   // Also sets probesCount
+   DBentry* TreeDB::find(string name){
+       if(root == NULL)
+           return NULL;
+       
+       //if();
+       //should I just use a for loop?
+       //no, use recursion for this function
+       //so base case is if right and left are null
+       //through each iteration find the name? 
+       //use or for the final results 
+       this->probesCount = 0;
+       return findHelper(root,name);
+       
+       
+       //search through the whole array
+       
+   }
+   
+   
+
+   // deletes the entry with the specified name (key)  from the database.
+   // If the entry was indeed in the database, it returns true.
+   // Returns false otherwise.
+   // See section 6 of the lab handout for the *required* removal method.
+   // If you do not use that removal method (replace deleted node by
+   // maximum node in the left subtree when the deleted node has two children)
+   // you will not match exercise's output.
+   bool TreeDB::remove(string name){
+       
+       
+       removeHelper(root,name);
+     
+       //how does the remove function work
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+   }
+   
+   bool TreeDB::removeHelper(TreeNode* my_root, string name){
+       TreeNode *ptr0; // points to the parent node 
+       TreeNode *ptrleft = NULL; // points to the node to be deleted if left
+       TreeNode *ptrright = NULL; //points to the node to be deleted if right
+       TreeNode *travelPtr = NULL;
+       
+       ptr0 = findHelperRemove(my_root,ptrleft,ptrright,name);
+       
+       
+       
+       //now do the four cases
+       //case where deleting a leaf
+       
+       
+       //case where deleted node is right child and only one child
+       
+       if(ptrleft == NULL && ptrright == NULL){
+           delete ptr0;
+           ptr0 = NULL;
+       }
+       
+       else if(ptrleft == NULL){
+           if(ptrright->getLeft() == NULL)//in this case the right child exist left is null
+               ptr0->setRight(ptrright->getRight());
+           else if(ptrright->getRight() == NULL )
+               ptr0->setRight(ptrright->getLeft()); //set any child of the right node to be the right child
+           ptrright->setRight(NULL);
+           ptrright->setLeft(NULL);
+           delete ptrright;
+           
+       }
+       //case where the deleted node is the left and only child
+       else if(ptrright == NULL){
+           if(ptrleft->getLeft() == NULL)
+               ptr0->setLeft(ptrleft->getRight());
+           else if(ptrleft->getRight() == NULL)
+               ptr0->setLeft(ptrleft->getLeft()); 
+           ptrleft->setRight(NULL);
+           ptrleft->setLeft(NULL);
+           delete ptrleft;
+       }
+       
+       
+       
+       //beginning case where both children are present
+       
+       //case where the node to be deleted is the left child
+       //in this case the replacement node is right most 
+       else if(ptrright == NULL){
+           if(ptrleft->getLeft() != NULL && ptrleft->getRight() != NULL){
+               travelPtr = ptrleft->getLeft();
+               while(travelPtr->getRight() != NULL)
+                   travelPtr = travelPtr->getRight(); //keep going right till null
+               ptr0->setLeft(travelPtr);
+               travelPtr->setLeft(ptrleft->getLeft());
+               travelPtr->setRight(ptrleft->getRight());
+               ptrleft->setLeft(NULL);
+               ptrleft->setRight(NULL);
+               delete ptrleft;
+               
+               
+               
+               
+               
+           }
+       }
+       else if(ptrleft == NULL){
+           if(ptrleft->getLeft() != NULL && ptrleft->getRight() != NULL){
+               travelPtr = ptrright->getLeft();
+               while(travelPtr->getRight() != NULL)
+                   travelPtr = travelPtr->getRight(); //keep going right till null
+               ptr0->setLeft(travelPtr);
+               travelPtr->setLeft(ptrright->getLeft());
+               travelPtr->setRight(ptrright->getRight());
+               ptrright->setLeft(NULL);
+               ptrright->setRight(NULL);
+               delete ptrright;
+               
+               
+               
+               
+               
+           }
+       }
+        
+       
+               
+           
+           
+       }
+   
+       TreeNode * TreeDB::findHelperRemove(TreeNode *my_root,TreeNode * &delNodeLeft,TreeNode * &delNodeRight,string name){ //use this function to get the preceding node
+        if(my_root != NULL){
+            if(my_root->getLeft() == NULL && my_root->getRight() == NULL)
+                return my_root;
+        } //no handling cases where left and right are null. 
+            if(my_root->getLeft()->getEntry()->getName() == name){
+                delNodeLeft = my_root->getLeft();
+                return my_root;
+            }
+            
+            if(my_root->getRight()->getEntry()->getName() == name){ //case are not mutually exclusive 
+                delNodeRight = my_root->getRight();
+                return my_root;
+            }
+            else if(name > my_root->getEntry()->getName()){
+                
+                return findHelperRemove(my_root->getRight(),delNodeLeft,delNodeRight,name);
+            }
+            else if(name < my_root->getEntry()->getName()){
+                return findHelperRemove(my_root->getLeft(),delNodeLeft,delNodeRight,name);
+            }
+            
+        else{
+            return NULL;
+        }
+    }
+    
+   
+
+      
+           
+           
+       
+       
+       
+       
+       
+       
+       
+   
+   
+   
+	
+   // deletes all the entries in the database.
+   void TreeDB::clear(){
+       
+       
+       delete_tree(root);
+       root = NULL;
+       //similar to destructor
+       
+       
+       
+   }
+    
+   // prints the number of probes stored in probesCount
+   void TreeDB::printProbes() const{
+       cout<<probesCount<<endl;
+       
+       
+       
+       
+   }
+   
+   void TreeDB::countActiveHelper(TreeNode* myroot, int& count) const{
+      //int countActive = 0;
+      
+      if(myroot == NULL)
+          return;
+      int left = 0;
+      countActiveHelper(myroot->getLeft(),left);
+      
+      int pres = 0;
+      if(myroot->getEntry()->getActive() == true)
+      pres = 1;
+      
+      int right = 0;
+      countActiveHelper(myroot->getRight(),right);
+      count = left+right+pres;
+   }
+   
+   // computes and prints out the total number of active entries
+   // in the database (i.e. entries with active==true).
+   void TreeDB::countActive () const{
+       
+       int count = 0; 
+       countActiveHelper(root,count);
+       
+       cout<<count<<endl;
+               
+       
+       
+       
+   }
+   void TreeDB::output(const TreeNode* myroot) const{
+       if(myroot != NULL){
+           cout<<myroot->getEntry()->getName()<<" "<<myroot->getEntry()->getIPaddress()<<" ";
+           if(myroot->getEntry()->getActive())
+               cout<<"active"<<endl;
+           else
+               cout<<"inactive"<<endl;
+           output(myroot->getLeft());
+           output(myroot->getRight());
+       }
+   }
+
+   // Prints the entire tree, in ascending order of key/name
+ ostream& operator<< (ostream& out, const TreeDB& rhs){
+     
+     rhs.output(rhs.root);
+    
+     
+    //why is this code not working? 
+     
+     
+     
+     
+     
+     
+     
+     
+     //start at the beginning 
+     
+     
+ }
+ 
+ ostream& operator<< (ostream& out, TreeNode* rhs){
+     cout<<rhs->getEntry()->getName()<<" "<<rhs->getEntry()->getIPaddress()<<" "<<rhs->getEntry()->getActive()<<endl;
+ }
+ 
+ 
